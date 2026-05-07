@@ -96,13 +96,15 @@
                     @foreach($competitions as $competition)
                         <div class="group bg-white rounded-3xl shadow-md hover:shadow-2xl transition-all duration-300 overflow-hidden border border-gray-100 hover:-translate-y-2 flex flex-col">
                             @if($competition->poster)
-                                <img src="{{ Storage::url($competition->poster) }}"
-                                    class="w-full h-52 object-cover group-hover:scale-105 transition duration-500"
-                            @else
-                                <div class="w-full h-44 bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center">
-                                    <span class="text-5xl">🏆</span>
-                                </div>
-                            @endif
+    <div class="w-full h-52 overflow-hidden">
+        <img src="{{ Storage::url($competition->poster) }}"
+            class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+    </div>
+@else
+    <div class="w-full h-52 bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center">
+        <span class="text-5xl">🏆</span>
+    </div>
+@endif
 
                             <div class="p-5 flex flex-col flex-1">
                                 <span class="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full w-fit">
