@@ -124,10 +124,10 @@
                                     </div>
                                 </div>
 
-                                <a href="/lobbies/{{ $lobby->id }}"
-                                    class="block w-full text-center bg-slate-900 hover:bg-indigo-600 text-white py-2 rounded text-[10px] font-black uppercase tracking-widest transition">
-                                    Lihat Detail Tim &rarr;
-                                </a>
+                                <a href="{{ route('competitions.lobbies.show', [$competition->id, $lobby->id]) }}"
+   class="block w-full text-center bg-slate-900 hover:bg-indigo-600 text-white py-2 rounded text-[10px] font-black uppercase tracking-widest transition">
+   Lihat Detail Tim &rarr;
+</a>
                             </div>
                         @endforeach
                     </div>
