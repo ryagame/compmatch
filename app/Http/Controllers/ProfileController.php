@@ -18,6 +18,7 @@ class ProfileController extends Controller
     {
         return view('profile.edit', [
             'user' => $request->user(),
+            'skills' => \App\Models\Skill::all(),
         ]);
     }
 
@@ -57,4 +58,19 @@ class ProfileController extends Controller
 
         return Redirect::to('/');
     }
+
+    public function updateSkills(Request $request)
+{
+    // Validasi input
+    $request->validate([
+        'skills' => 'array',
+        'skills.*' => 'exists:skills,id',
+    ]);
+
+    // Sinkronisasi tabel pivot skill_user
+    // sync() akan menghapus skill lama yang tidak dicentang dan menambah yang baru
+    $request->user()->skills()->sync($request->skills ?? []);
+
+    return back()->with('status', 'skills-updated');
+}
 }

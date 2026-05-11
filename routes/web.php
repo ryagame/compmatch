@@ -16,6 +16,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
+    Route::patch('/profile/skills', [ProfileController::class, 'updateSkills'])->name('profile.skills.update');
+    
     // Competition
     Route::resource('competitions', CompetitionController::class);
 
