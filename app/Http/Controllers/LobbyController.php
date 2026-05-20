@@ -41,20 +41,18 @@ class LobbyController extends Controller
 
    public function show(Competition $competition, Lobby $lobby)
 {
-    // Cek status user
     $isOwner = auth()->id() === $lobby->user_id;
-    $isMember = $lobby->members()->where('user_id', auth()->id())->exists();
 
-    // Load data pendukung supaya gak error saat looping
-    $lobby->load(['members.user', 'skillSlots.filledBy']);
+    $isMember = $lobby->members()
+        ->where('user_id', auth()->id())
+        ->exists();
 
-    // BAGIAN PALING PENTING: compact harus ada 'competition'
-    return view('lobbies.show', [
-        'competition' => $competition,
-        'lobby' => $lobby,
-        'isOwner' => $isOwner,
-        'isMember' => $isMember
-    ]);
+    return view('lobbies.show', compact(
+        'competition',
+        'lobby',
+        'isOwner',
+        'isMember'
+    ));
 }
 
     public function edit(Competition $competition, Lobby $lobby)

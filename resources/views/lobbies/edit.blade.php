@@ -1,51 +1,96 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            Edit Lobby — {{ $lobby->name }}
-        </h2>
-    </x-slot>
+@extends('layouts.app')
 
-    <div class="py-8">
-        <div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="bg-white rounded-lg shadow p-6">
+@section('content')
 
-                <form action="{{ route('competitions.lobbies.update', [$competition, $lobby]) }}"
-                      method="POST">
-                    @csrf
-                    @method('PATCH')
+<div class="min-h-screen bg-[#070711] py-10 px-6">
 
-                    {{-- Nama Lobby --}}
-                    <div class="mb-4">
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Nama Lobby</label>
-                        <input type="text" name="name" value="{{ old('name', $lobby->name) }}"
-                               class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring focus:ring-blue-300">
-                        @error('name')
-                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                        @enderror
-                    </div>
+    <div class="max-w-2xl mx-auto">
 
-                    {{-- Max Members --}}
-                    <div class="mb-6">
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Maksimal Anggota</label>
-                        <input type="number" name="max_members" value="{{ old('max_members', $lobby->max_members) }}"
-                               min="2" max="20"
-                               class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring focus:ring-blue-300">
-                        @error('max_members')
-                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                        @enderror
-                    </div>
+        <div class="bg-[#11111d] border border-white/10 rounded-3xl shadow-2xl overflow-hidden">
 
-                    <div class="flex items-center gap-4">
-                        <button type="submit"
-                                class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700">
-                            Simpan Perubahan
-                        </button>
-                        <a href="{{ route('competitions.lobbies.show', [$competition, $lobby]) }}"
-                           class="text-gray-500 hover:underline text-sm">Batal</a>
-                    </div>
-                </form>
+            {{-- HEADER --}}
+            <div class="px-8 py-6 border-b border-white/10">
+                <h1 class="text-3xl font-black text-white tracking-tight">
+                    Edit Lobby
+                </h1>
 
+                <p class="text-slate-400 mt-2 text-sm">
+                    Perbarui informasi lobby tim kamu.
+                </p>
             </div>
+
+            {{-- FORM --}}
+            <form action="{{ route('competitions.lobbies.update', [$competition, $lobby]) }}"
+                  method="POST"
+                  class="p-8 space-y-8">
+
+                @csrf
+                @method('PATCH')
+
+                {{-- NAMA LOBBY --}}
+                <div>
+                    <label class="block text-sm font-bold text-white mb-3">
+                        Nama Lobby
+                    </label>
+
+                    <input
+                        type="text"
+                        name="name"
+                        value="{{ old('name', $lobby->name) }}"
+                        placeholder="Masukkan nama lobby"
+                        class="w-full bg-[#1b1b2d] border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
+
+                    @error('name')
+                        <p class="text-rose-400 text-sm mt-2">
+                            {{ $message }}
+                        </p>
+                    @enderror
+                </div>
+
+                {{-- MAX MEMBERS --}}
+                <div>
+                    <label class="block text-sm font-bold text-white mb-3">
+                        Maksimal Anggota
+                    </label>
+
+                    <input
+                        type="number"
+                        name="max_members"
+                        value="{{ old('max_members', $lobby->max_members) }}"
+                        min="2"
+                        max="20"
+                        class="w-full bg-[#1b1b2d] border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
+
+                    @error('max_members')
+                        <p class="text-rose-400 text-sm mt-2">
+                            {{ $message }}
+                        </p>
+                    @enderror
+                </div>
+
+                {{-- BUTTON --}}
+                <div class="flex items-center justify-end gap-4 pt-4">
+
+                    <a href="{{ route('competitions.lobbies.show', [$competition, $lobby]) }}"
+                       class="px-6 py-3 rounded-2xl bg-white/10 hover:bg-white/20 text-white font-bold transition">
+                        Batal
+                    </a>
+
+                    <button
+                        type="submit"
+                        class="px-8 py-3 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-black tracking-wide transition shadow-lg shadow-indigo-900/40">
+
+                        Simpan Perubahan
+                    </button>
+
+                </div>
+
+            </form>
+
         </div>
+
     </div>
-</x-app-layout>
+
+</div>
+
+@endsection

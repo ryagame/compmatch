@@ -1,158 +1,200 @@
-<x-app-layout>
-    <x-slot name="header">
-        <div class="flex justify-between items-center">
-            <h2 class="font-bold text-xl text-slate-800 leading-tight">Daftar Lomba</h2>
-            <a href="{{ route('competitions.create') }}"
-                class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-6 rounded-md text-sm transition shadow-sm">
-                + Tambah Lomba
-            </a>
+{{-- resources/views/competitions/index.blade.php --}}
+@extends('layouts.app')
+
+@section('title', 'Daftar Lomba - CompMatch')
+
+@section('content')
+
+{{-- ===== HERO ===== --}}
+<section class="cm-hero">
+    <div class="cm-hero-bg"></div>
+    <div class="cm-hero-grid"></div>
+    <div class="cm-hero-inner">
+
+        <div class="cm-badge">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+            </svg>
+            Compmatch Platform
         </div>
-    </x-slot>
 
-    <div class="py-10 bg-slate-50 min-h-screen">
-        {{-- Hero Banner (Solid & Clean) --}}
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 mb-10">
-            <div class="relative overflow-hidden rounded-xl bg-indigo-700 p-12 text-white shadow-lg border border-indigo-800">
-                <div class="relative z-10">
-                    <span class="inline-block bg-white/20 px-3 py-1 rounded text-[10px] font-bold uppercase tracking-widest mb-4">
-                        CompMatch Platform
-                    </span>
+        <h1 class="cm-hero-title">
+            Temukan Lomba dan<br>
+            <em>Bangun Tim</em> Terbaikmu
+        </h1>
 
-                    <h1 class="text-5xl font-extrabold mb-4 leading-tight tracking-tight">
-                        Temukan Lomba dan <br>Bangun Tim Terbaikmu
-                    </h1>
+        <p class="cm-hero-desc">
+            Cari kompetisi, buat lobby tim, isi role spesifik, dan temukan rekan setim
+            yang tepat untuk memenangkan kompetisi bersama.
+        </p>
 
-                    <p class="text-indigo-100 max-w-2xl text-base leading-relaxed opacity-90">
-                        Cari kompetisi, buat lobby tim, isi role spesifik, dan temukan rekan setim yang tepat untuk memenangkan kompetisi bersama.
-                    </p>
+        <div class="cm-hero-actions">
+            <a href="{{ route('competitions.create') }}" class="cm-btn-primary">
+                Mulai Posting Lomba
+            </a>
+            <a href="#daftar-lomba" class="cm-btn-outline">Jelajahi Lomba →</a>
+        </div>
 
-                    <div class="mt-8 flex gap-4">
-                        <a href="{{ route('competitions.create') }}"
-                            class="bg-white text-indigo-700 font-bold px-6 py-3 rounded-md hover:bg-slate-50 transition shadow-md">
-                            Mulai Posting Lomba
-                        </a>
+        <div class="cm-stats">
+            <div class="cm-stat">
+                <div class="cm-stat-value">{{ $totalCompetitions }}</div>
+                <div class="cm-stat-label">Lomba Aktif</div>
+            </div>
+            <div class="cm-stat">
+                <div class="cm-stat-value">{{ $totalUsers }}</div>
+                <div class="cm-stat-label">Peserta Terdaftar</div>
+            </div>
+            <div class="cm-stat">
+                <div class="cm-stat-value">93%</div>
+                <div class="cm-stat-label">Kepuasan Tim</div>
+            </div>
+        </div>
+    </div>
+</section>
 
-                        <a href="#competition-list"
-                            class="bg-indigo-800 text-white font-bold px-6 py-3 rounded-md hover:bg-indigo-900 transition border border-indigo-600">
-                            Jelajahi Lomba
-                        </a>
+{{-- ===== SEARCH + LIST ===== --}}
+<section class="cm-section" id="daftar-lomba">
+
+    {{-- Search Bar --}}
+    <form method="GET" action="{{ route('competitions.index') }}" class="cm-search-bar">
+        <svg class="cm-search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <input
+            type="text"
+            name="search"
+            value="{{ request('search') }}"
+            placeholder="Cari kompetisi berdasarkan nama...">
+        <select name="kategori">
+    <option value="">Semua Kategori</option>
+    <option value="desain"    {{ request('kategori') == 'desain'    ? 'selected' : '' }}>Desain</option>
+    <option value="teknologi" {{ request('kategori') == 'teknologi' ? 'selected' : '' }}>Teknologi</option>
+    <option value="bisnis"    {{ request('kategori') == 'bisnis'    ? 'selected' : '' }}>Bisnis</option>
+    <option value="seni"      {{ request('kategori') == 'seni'      ? 'selected' : '' }}>Seni</option>
+    </select>
+        <button type="submit">CARI</button>
+    </form>
+
+    {{-- Filter Chips --}}
+    <div class="cm-filter-chips">
+        <a href="{{ route('competitions.index') }}"
+           class="cm-chip {{ !request('kategori') && !request('sort') ? 'active' : '' }}">
+           Semua
+        </a>
+        @foreach(['desain','teknologi','bisnis','seni'] as $kat)
+        <a href="{{ route('competitions.index', ['kategori' => $kat]) }}"
+           class="cm-chip {{ request('kategori') == $kat ? 'active' : '' }}">
+           {{ ucfirst($kat) }}
+        </a>
+        @endforeach
+        <a href="{{ route('competitions.index', array_merge(request()->except('sort'), ['sort' => 'deadline'])) }}"
+           class="cm-chip {{ request('sort') == 'deadline' ? 'active' : '' }}">
+           Deadline Terdekat
+        </a>
+        <a href="{{ route('competitions.index', array_merge(request()->except('sort'), ['sort' => 'latest'])) }}"
+           class="cm-chip {{ request('sort') == 'latest' ? 'active' : '' }}">
+           Terbaru
+        </a>
+    </div>
+
+    {{-- Section Header --}}
+    <div class="cm-section-header">
+        <span class="cm-section-title">Daftar Lomba</span>
+        <span class="cm-section-count">{{ $competitions->total() }} kompetisi ditemukan</span>
+    </div>
+
+    {{-- Cards Grid --}}
+    <div class="cm-cards-grid">
+        @forelse($competitions as $comp)
+        <div class="cm-card">
+
+            {{-- Thumbnail --}}
+            <div class="cm-card-thumb cm-card-thumb-{{ strtolower($comp->kategori ?? 'default') }}">
+                @if($comp->thumbnail)
+                    <img src="{{ asset('storage/' . $comp->thumbnail) }}"
+                         alt="{{ $comp->nama }}"
+                         style="width:100%;height:100%;object-fit:cover;">
+                @else
+                    <div class="cm-card-thumb-icon">
+                        {{ strtoupper(substr($comp->nama, 0, 4)) }}
                     </div>
+                @endif
+            </div>
+
+            {{-- Body --}}
+            <div class="cm-card-body">
+                <span class="cm-tag cm-tag-{{ strtolower($comp->kategori ?? 'default') }}">
+                    {{ $comp->kategori ?? 'Umum' }}
+                </span>
+
+                <div class="cm-card-title">{{ $comp->nama }}</div>
+                <div class="cm-card-desc">{{ Str::limit($comp->deskripsi, 85) }}</div>
+
+                <div class="cm-card-meta">
+                    <div class="cm-deadline">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+                        </svg>
+                        DL: {{ \Carbon\Carbon::parse($comp->deadline)->format('Y-m-d') }}
+                    </div>
+                    <div class="cm-poster">
+                        <span>Oleh</span>
+                        <strong>{{ strtoupper(Str::limit($comp->user->name ?? 'Unknown', 18)) }}</strong>
+                    </div>
+                </div>
+
+                <div class="cm-card-actions">
+                    <a href="{{ route('competitions.show', $comp->id) }}" class="cm-btn-detail">
+                        Lihat Detail
+                    </a>
+
+                    @auth
+                    @if(Auth::id() === $comp->user_id)
+                        <a href="{{ route('competitions.edit', $comp->id) }}"
+                           class="cm-btn-icon" title="Edit">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                            </svg>
+                        </a>
+
+                        <form method="POST" action="{{ route('competitions.destroy', $comp->id) }}"
+                              onsubmit="return confirm('Yakin hapus lomba ini?')">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="cm-btn-icon danger" title="Hapus">
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="3 6 5 6 21 6"/>
+                                    <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+                                    <path d="M10 11v6M14 11v6"/>
+                                    <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
+                                </svg>
+                            </button>
+                        </form>
+                    @endif
+                    @endauth
                 </div>
             </div>
         </div>
 
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-
-            @if(session('success'))
-                <div class="mb-6 p-4 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-lg text-sm font-medium">
-                    {{ session('success') }}
-                </div>
-            @endif
-
-            @if($competitions->isEmpty())
-                <div class="text-center py-24 border-2 border-dashed border-slate-200 rounded-2xl">
-                    <p class="text-slate-400 font-medium">Belum ada lomba tersedia. Jadilah yang pertama!</p>
-                </div>
-            @else
-
-                {{-- Search & Filter (Clean UI) --}}
-                <div class="mb-10 bg-white rounded-lg shadow-sm border border-slate-200 p-2 flex flex-col sm:flex-row gap-2">
-                    <form method="GET" action="{{ route('competitions.index') }}" class="flex flex-1 gap-2">
-                        <input type="text" name="search" value="{{ request('search') }}"
-                               placeholder="Cari kompetisi berdasarkan nama..."
-                               class="flex-1 border-none bg-slate-50 rounded-md px-4 py-3 text-sm focus:ring-2 focus:ring-indigo-500 text-slate-700 font-medium">
-
-                        <select name="category"
-                                class="border-none bg-slate-50 rounded-md px-4 py-3 text-sm focus:ring-2 focus:ring-indigo-500 text-slate-700 font-bold">
-                            <option value="">Semua Kategori</option>
-                            @foreach($categories as $cat)
-                                <option value="{{ $cat }}" {{ request('category') == $cat ? 'selected' : '' }}>
-                                    {{ $cat }}
-                                </option>
-                            @endforeach
-                        </select>
-
-                        <button type="submit"
-                                class="bg-slate-900 text-white px-8 py-3 rounded-md hover:bg-slate-800 text-sm font-bold transition">
-                            CARI
-                        </button>
-
-                        @if(request('search') || request('category'))
-                            <a href="{{ route('competitions.index') }}"
-                               class="bg-slate-100 text-slate-600 px-4 py-3 rounded-md hover:bg-slate-200 text-sm font-bold flex items-center justify-center">
-                                RESET
-                            </a>
-                        @endif
-                    </form>
-                </div>
-                
-                {{-- Grid Lomba --}}
-                <div id="competition-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    @foreach($competitions as $competition)
-                        <div class="group bg-white rounded-lg border border-slate-200 shadow-sm hover:shadow-md hover:border-indigo-300 transition-all duration-300 overflow-hidden flex flex-col">
-                            
-                            {{-- Poster Area --}}
-                            <div class="w-full h-48 bg-slate-100 overflow-hidden border-b border-slate-100">
-                                @if($competition->poster)
-                                    <img src="{{ Storage::url($competition->poster) }}"
-                                        class="w-full h-full object-cover group-hover:scale-105 transition duration-700">
-                                @else
-                                    <div class="w-full h-full flex items-center justify-center bg-indigo-50">
-                                        <span class="text-indigo-200 font-black text-4xl italic uppercase">COMP</span>
-                                    </div>
-                                @endif
-                            </div>
-
-                            <div class="p-6 flex flex-col flex-1">
-                                <span class="text-[10px] font-black uppercase tracking-widest bg-slate-100 text-slate-600 px-2 py-1 rounded w-fit mb-3">
-                                    {{ $competition->category }}
-                                </span>
-                                
-                                <h3 class="font-bold text-lg text-slate-900 group-hover:text-indigo-600 transition leading-tight mb-2">
-                                    {{ $competition->title }}
-                                </h3>
-                                
-                                <p class="text-slate-500 text-sm line-clamp-2 mb-4 leading-relaxed flex-1">
-                                    {{ $competition->description }}
-                                </p>
-
-                                <div class="flex items-center justify-between pt-4 border-t border-slate-50">
-                                    <div class="text-[11px] font-bold text-rose-600 uppercase">
-                                        DL: {{ $competition->deadline }}
-                                    </div>
-                                    <div class="text-[11px] font-bold text-slate-400 uppercase">
-                                        BY: {{ $competition->user->name }}
-                                    </div>
-                                </div>
-
-                                <div class="flex gap-2 mt-6">
-                                    <a href="{{ route('competitions.show', $competition) }}"
-                                        class="flex-1 text-center bg-indigo-600 hover:bg-indigo-700 text-white py-2.5 rounded text-xs font-bold transition uppercase tracking-wider">
-                                        Lihat Detail
-                                    </a>
-                                    
-                                    @if(Auth::id() === $competition->user_id)
-                                        <a href="{{ route('competitions.edit', $competition) }}"
-                                            class="bg-slate-100 hover:bg-slate-900 hover:text-white text-slate-600 p-2.5 rounded transition">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
-                                        </a>
-                                        
-                                        <form action="{{ route('competitions.destroy', $competition) }}" method="POST"
-                                            onsubmit="return confirm('Hapus lomba?')">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button class="bg-slate-100 hover:bg-rose-600 hover:text-white text-rose-600 p-2.5 rounded transition">
-                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
-                                            </button>
-                                        </form>
-                                    @endif
-                                </div>
-                            </div>
-                        </div>
-                    @endforeach
-                </div>
-            @endif
-
+        @empty
+        <div class="cm-empty">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            </svg>
+            <p>Tidak ada kompetisi ditemukan.</p>
+            <a href="{{ route('competitions.create') }}" class="cm-btn-primary">+ Tambah Lomba Pertama</a>
         </div>
+        @endforelse
     </div>
-</x-app-layout>
+
+    {{-- Pagination --}}
+    @if($competitions->hasPages())
+    <div class="cm-pagination">
+        {{ $competitions->withQueryString()->links() }}
+    </div>
+    @endif
+
+</section>
+
+@endsection

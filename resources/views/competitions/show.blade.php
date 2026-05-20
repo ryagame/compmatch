@@ -1,139 +1,246 @@
-<x-app-layout>
-    <x-slot name="header">
-        <div class="flex justify-between items-center">
-            <h2 class="font-bold text-xl text-slate-800 leading-tight uppercase tracking-tight">
-                Detail Kompetisi
-            </h2>
+@extends('layouts.app')
+
+@section('title', $competition->nama . ' - CompMatch')
+
+@section('content')
+
+<div class="min-h-screen bg-[#070711] text-white">
+
+    {{-- HERO --}}
+    <section class="relative overflow-hidden border-b border-white/5">
+
+        {{-- background image --}}
+        @if($competition->thumbnail)
+            <div class="absolute inset-0">
+                <img
+                    src="{{ asset('storage/' . $competition->thumbnail) }}"
+                    class="w-full h-full object-cover opacity-20"
+                    alt="{{ $competition->nama }}"
+                >
+            </div>
+        @endif
+
+        {{-- overlay --}}
+        <div class="absolute inset-0 bg-gradient-to-b from-[#080812]/60 via-[#070711] to-[#070711]"></div>
+
+        <div class="relative max-w-7xl mx-auto px-6 py-20">
+
             <a href="{{ route('competitions.index') }}"
-                class="bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold py-2 px-4 rounded text-xs uppercase tracking-widest transition">
-                &larr; Kembali
+               class="inline-flex items-center gap-2 text-sm text-slate-400 hover:text-white transition mb-10">
+                ← Kembali ke daftar lomba
             </a>
-        </div>
-    </x-slot>
 
-    <div class="py-10 bg-slate-50 min-h-screen">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-8">
-            
-            {{-- Bagian Utama Detail Lomba --}}
-            <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-                {{-- Banner/Poster Area --}}
-                <div class="w-full h-72 bg-indigo-50 border-b border-slate-100 flex items-center justify-center overflow-hidden">
-                    @if($competition->poster)
-                        <img src="{{ Storage::url($competition->poster) }}" class="w-full h-full object-cover">
-                    @else
-                        <div class="flex flex-col items-center opacity-20">
-                            <span class="text-indigo-600 font-black text-6xl italic">COMPMATCH</span>
-                        </div>
-                    @endif
-                </div>
+            <div class="grid lg:grid-cols-2 gap-12 items-center">
 
-                <div class="p-8">
-                    <div class="flex flex-wrap gap-2 mb-6">
-                        <span class="text-[10px] font-black uppercase tracking-widest bg-indigo-600 text-white px-3 py-1 rounded">
-                            {{ $competition->category }}
-                        </span>
-                    </div>
+                {{-- LEFT --}}
+                <div>
 
-                    <h1 class="text-4xl font-extrabold text-slate-900 mb-4 tracking-tight">
-                        {{ $competition->title }}
+                    <span class="inline-block px-4 py-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 text-xs font-bold uppercase tracking-[0.2em] mb-6">
+                        {{ $competition->kategori }}
+                    </span>
+
+                    <h1 class="text-5xl lg:text-6xl font-black leading-tight tracking-tight mb-6">
+                        {{ $competition->nama }}
                     </h1>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 py-6 border-y border-slate-100">
-                        <div class="flex items-center gap-3">
-                            <div class="p-2 bg-slate-100 rounded">
-                                <svg class="w-5 h-5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
+                    <p class="text-slate-400 text-lg leading-relaxed mb-8">
+                        {{ $competition->deskripsi }}
+                    </p>
+
+                    <div class="flex flex-wrap gap-4">
+
+                        <div class="bg-white/5 border border-white/5 rounded-2xl px-5 py-4 min-w-[220px]">
+                            <div class="text-slate-500 text-xs uppercase tracking-widest mb-2">
+                                Penyelenggara
                             </div>
-                            <div>
-                                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Penyelenggara</p>
-                                <p class="text-sm font-bold text-slate-700">{{ $competition->user->name }}</p>
+
+                            <div class="font-bold text-lg">
+                                {{ $competition->user->name }}
                             </div>
                         </div>
 
-                        <div class="flex items-center gap-3">
-                            <div class="p-2 bg-rose-50 rounded">
-                                <svg class="w-5 h-5 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                        <div class="bg-rose-500/10 border border-rose-500/10 rounded-2xl px-5 py-4 min-w-[220px]">
+                            <div class="text-rose-300/70 text-xs uppercase tracking-widest mb-2">
+                                Deadline
                             </div>
-                            <div>
-                                <p class="text-[10px] font-bold text-rose-400 uppercase tracking-widest">Batas Pendaftaran</p>
-                                <p class="text-sm font-bold text-rose-600">{{ $competition->deadline }}</p>
+
+                            <div class="font-bold text-lg text-rose-300">
+                                {{ \Carbon\Carbon::parse($competition->deadline)->format('d M Y') }}
                             </div>
                         </div>
-                    </div>
 
-                    <div class="prose prose-slate max-w-none">
-                        <h4 class="text-sm font-black uppercase tracking-widest text-slate-800 mb-3">Deskripsi Lomba</h4>
-                        <p class="text-slate-600 leading-relaxed">
-                            {{ $competition->description }}
-                        </p>
                     </div>
 
                     @if(Auth::id() === $competition->user_id)
-                        <div class="mt-10 pt-6 border-t border-slate-100 flex gap-3">
-                            <a href="{{ route('competitions.edit', $competition) }}"
-                                class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 px-6 rounded text-xs uppercase tracking-widest transition">
+
+                        <div class="flex flex-wrap gap-3 mt-8">
+
+                            <a href="{{ route('competitions.edit', $competition->id) }}"
+                               class="bg-indigo-600 hover:bg-indigo-700 px-6 py-3 rounded-2xl text-sm font-bold transition">
                                 Edit Kompetisi
                             </a>
-                            <form action="{{ route('competitions.destroy', $competition) }}" method="POST" onsubmit="return confirm('Hapus kompetisi ini?')">
+
+                            <form method="POST"
+                                  action="{{ route('competitions.destroy', $competition->id) }}"
+                                  onsubmit="return confirm('Hapus kompetisi ini?')">
+
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="bg-white border border-rose-200 text-rose-600 hover:bg-rose-50 font-bold py-2.5 px-6 rounded text-xs uppercase tracking-widest transition">
+
+                                <button type="submit"
+                                    class="bg-white/5 border border-white/10 hover:bg-rose-600 hover:border-rose-600 px-6 py-3 rounded-2xl text-sm font-bold transition">
                                     Hapus
                                 </button>
                             </form>
+
                         </div>
+
                     @endif
-                </div>
-            </div>
 
-            {{-- Bagian Lobby Tersedia --}}
-            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-8">
-                <div class="flex justify-between items-center mb-8">
-                    <div>
-                        <h3 class="text-xl font-bold text-slate-900 tracking-tight">Lobby Tim Tersedia</h3>
-                        <p class="text-xs text-slate-500 mt-1 font-medium">Temukan tim yang sedang mencari anggota untuk kolaborasi.</p>
-                    </div>
-                    <a href="{{ url('/competitions/'.$competition->id.'/lobbies/create') }}"
-                        class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 px-6 rounded text-xs uppercase tracking-widest transition shadow-md">
-                        + Buat Lobby Baru
-                    </a>
                 </div>
 
-                @if($competition->lobbies->isEmpty())
-                    <div class="py-12 border-2 border-dashed border-slate-100 rounded-lg text-center">
-                        <p class="text-slate-400 text-sm font-medium">Belum ada lobby tim. Ayo mulai buat lobby pertamamu!</p>
-                    </div>
-                @else
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        @foreach($competition->lobbies as $lobby)
-                            <div class="group border border-slate-200 rounded-lg p-5 hover:border-indigo-300 hover:bg-indigo-50/30 transition-all">
-                                <div class="flex justify-between items-start mb-4">
-                                    <h4 class="font-bold text-slate-900 group-hover:text-indigo-600 transition tracking-tight">{{ $lobby->name }}</h4>
-                                    <span class="text-[10px] font-black uppercase tracking-widest bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded">
-                                        {{ $lobby->status ?? 'Tersedia' }}
-                                    </span>
-                                </div>
-                                
-                                <div class="space-y-2 mb-6">
-                                    <div class="flex items-center text-xs text-slate-500 font-medium">
-                                        <svg class="w-4 h-4 mr-2 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 005.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
-                                        {{ $lobby->members_count ?? '0' }} / {{ $lobby->max_members ?? '4' }} Anggota bergabung
+                {{-- RIGHT --}}
+                <div>
+
+                    <div class="bg-gradient-to-br from-indigo-500/20 to-purple-500/10 border border-white/10 rounded-[32px] p-5 shadow-2xl">
+
+                        @if($competition->thumbnail)
+
+                            <img
+                                src="{{ asset('storage/' . $competition->thumbnail) }}"
+                                alt="{{ $competition->nama }}"
+                                class="w-full h-[420px] object-cover rounded-3xl"
+                            >
+
+                        @else
+
+                            <div class="h-[420px] rounded-3xl bg-gradient-to-br from-indigo-600 to-purple-700 flex items-center justify-center">
+
+                                <div class="text-center">
+
+                                    <div class="text-7xl font-black tracking-tight">
+                                        {{ strtoupper(substr($competition->nama, 0, 2)) }}
                                     </div>
-                                    <div class="flex items-center text-xs text-slate-500 font-medium">
-                                        <svg class="w-4 h-4 mr-2 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
-                                        {{ $lobby->skill_slots_count ?? '0' }} Slot skill dibutuhkan
+
+                                    <div class="mt-4 text-indigo-100 uppercase tracking-[0.3em] text-sm">
+                                        COMPMATCH
                                     </div>
+
                                 </div>
 
-                                <a href="{{ route('competitions.lobbies.show', [$competition->id, $lobby->id]) }}"
-   class="block w-full text-center bg-slate-900 hover:bg-indigo-600 text-white py-2 rounded text-[10px] font-black uppercase tracking-widest transition">
-   Lihat Detail Tim &rarr;
-</a>
                             </div>
-                        @endforeach
+
+                        @endif
+
                     </div>
-                @endif
+
+                </div>
+
             </div>
 
         </div>
-    </div>
-</x-app-layout>
+    </section>
+
+    {{-- LOBBY --}}
+    <section class="max-w-7xl mx-auto px-6 py-16">
+
+        <div class="flex flex-wrap justify-between items-center gap-5 mb-10">
+
+            <div>
+                <h2 class="text-3xl font-black tracking-tight mb-2">
+                    Lobby Tim
+                </h2>
+
+                <p class="text-slate-400">
+                    Temukan tim terbaik dan mulai kolaborasi.
+                </p>
+            </div>
+
+            <a href="{{ url('/competitions/'.$competition->id.'/lobbies/create') }}"
+               class="bg-emerald-600 hover:bg-emerald-700 px-6 py-3 rounded-2xl text-sm font-bold transition shadow-lg shadow-emerald-900/30">
+                + Buat Lobby
+            </a>
+
+        </div>
+
+        @if($competition->lobbies->count() > 0)
+
+            <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+
+                @foreach($competition->lobbies as $lobby)
+
+                    <div class="bg-[#11111d] border border-white/5 hover:border-indigo-500/20 rounded-3xl p-6 transition duration-300">
+
+                        <div class="flex justify-between items-start mb-5">
+
+                            <div>
+                                <h3 class="text-xl font-bold mb-2">
+                                    {{ $lobby->name }}
+                                </h3>
+
+                                <span class="inline-block px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-300 text-[11px] uppercase tracking-widest font-bold">
+                                    {{ $lobby->status ?? 'Tersedia' }}
+                                </span>
+                            </div>
+
+                        </div>
+
+                        <div class="space-y-4 text-slate-400 mb-8">
+
+                            <div class="flex justify-between">
+                                <span>Jumlah Anggota</span>
+                                <strong class="text-white">
+                                    {{ $lobby->members_count ?? 0 }}/{{ $lobby->max_members ?? 4 }}
+                                </strong>
+                            </div>
+
+                            <div class="flex justify-between">
+                                <span>Skill Dibutuhkan</span>
+                                <strong class="text-indigo-300">
+                                    {{ $lobby->skill_slots_count ?? 0 }}
+                                </strong>
+                            </div>
+
+                        </div>
+
+                        <a href="{{ route('competitions.lobbies.show', [$competition->id, $lobby->id]) }}"
+                           class="block text-center bg-indigo-600 hover:bg-indigo-700 rounded-2xl py-3 font-bold transition">
+                            Lihat Detail Tim
+                        </a>
+
+                    </div>
+
+                @endforeach
+
+            </div>
+
+        @else
+
+            <div class="bg-[#11111d] border border-dashed border-white/10 rounded-[32px] py-24 text-center">
+
+                <div class="text-6xl mb-6">
+                    🚀
+                </div>
+
+                <h3 class="text-2xl font-bold mb-3">
+                    Belum Ada Lobby
+                </h3>
+
+                <p class="text-slate-500 mb-8">
+                    Jadilah yang pertama membuat tim untuk kompetisi ini.
+                </p>
+
+                <a href="{{ url('/competitions/'.$competition->id.'/lobbies/create') }}"
+                   class="bg-indigo-600 hover:bg-indigo-700 px-7 py-3 rounded-2xl font-bold transition">
+                    + Buat Lobby Pertama
+                </a>
+
+            </div>
+
+        @endif
+
+    </section>
+
+</div>
+
+@endsection

@@ -1,75 +1,175 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            Edit Lomba
-        </h2>
-    </x-slot>
+@extends('layouts.app')
 
-    <div class="py-8">
-        <div class="max-w-2xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white rounded-xl shadow p-8">
+@section('content')
 
-                @if($errors->any())
-                    <div class="mb-4 p-4 bg-red-100 text-red-800 rounded">
-                        <ul class="list-disc list-inside text-sm">
-                            @foreach($errors->all() as $error)
-                                <li>{{ $error }}</li>
-                            @endforeach
-                        </ul>
-                    </div>
-                @endif
+    <div class="min-h-screen bg-[#070711] py-10 px-6">
 
-                <form action="{{ route('competitions.update', $competition) }}" method="POST" enctype="multipart/form-data">
+        <div class="max-w-4xl mx-auto">
+
+            <div class="bg-[#11111d] border border-white/10 rounded-3xl overflow-hidden shadow-2xl">
+
+                {{-- HEADER --}}
+                <div class="px-8 py-6 border-b border-white/10">
+                    <h1 class="text-3xl font-black text-white tracking-tight">
+                        Edit Data Kompetisi
+                    </h1>
+
+                    <p class="text-slate-400 mt-2 text-sm">
+                        Perbarui informasi lomba kamu di bawah ini.
+                    </p>
+                </div>
+
+                {{-- FORM --}}
+                <form
+                    action="{{ route('competitions.update', $competition->id) }}"
+                    method="POST"
+                    enctype="multipart/form-data"
+                    class="p-8 space-y-8">
+
                     @csrf
                     @method('PUT')
 
-                    <div class="mb-4">
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Judul Lomba</label>
-                        <input type="text" name="title" value="{{ old('title', $competition->title) }}"
-                            class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    {{-- TITLE --}}
+                    <div>
+                        <label class="block text-sm font-bold text-white mb-3">
+                            Nama Kompetisi
+                        </label>
+
+                        <input
+                            type="text"
+                            name="title"
+                            value="{{ old('title', $competition->title) }}"
+                            class="w-full bg-[#1b1b2d] border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                            placeholder="Masukkan nama kompetisi">
+
+                        @error('title')
+                            <p class="text-rose-400 text-sm mt-2">
+                                {{ $message }}
+                            </p>
+                        @enderror
                     </div>
 
-                    <div class="mb-4">
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Kategori</label>
-                        <input type="text" name="category" value="{{ old('category', $competition->category) }}"
-                            class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    {{-- DESCRIPTION --}}
+                    <div>
+                        <label class="block text-sm font-bold text-white mb-3">
+                            Deskripsi Kompetisi
+                        </label>
+
+                        <textarea
+                            name="description"
+                            rows="6"
+                            class="w-full bg-[#1b1b2d] border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                            placeholder="Jelaskan detail kompetisi">{{ old('description', $competition->description) }}</textarea>
+
+                        @error('description')
+                            <p class="text-rose-400 text-sm mt-2">
+                                {{ $message }}
+                            </p>
+                        @enderror
                     </div>
 
-                    <div class="mb-4">
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Deskripsi</label>
-                        <textarea name="description" rows="4"
-                            class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">{{ old('description', $competition->description) }}</textarea>
+                    {{-- CATEGORY + DEADLINE --}}
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                        {{-- CATEGORY --}}
+                        <div>
+                            <label class="block text-sm font-bold text-white mb-3">
+                                Kategori
+                            </label>
+
+                            <select
+                                name="category"
+                                class="w-full bg-[#1b1b2d] border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
+
+                                <option value="Desain"
+                                    {{ old('category', $competition->category) == 'Desain' ? 'selected' : '' }}>
+                                    Desain
+                                </option>
+
+                                <option value="Teknologi"
+                                    {{ old('category', $competition->category) == 'Teknologi' ? 'selected' : '' }}>
+                                    Teknologi
+                                </option>
+
+                                <option value="Bisnis"
+                                    {{ old('category', $competition->category) == 'Bisnis' ? 'selected' : '' }}>
+                                    Bisnis
+                                </option>
+
+                                <option value="Seni"
+                                    {{ old('category', $competition->category) == 'Seni' ? 'selected' : '' }}>
+                                    Seni
+                                </option>
+                            </select>
+
+                            @error('category')
+                                <p class="text-rose-400 text-sm mt-2">
+                                    {{ $message }}
+                                </p>
+                            @enderror
+                        </div>
+
+                        {{-- DEADLINE --}}
+                        <div>
+                            <label class="block text-sm font-bold text-white mb-3">
+                                Deadline
+                            </label>
+
+                            <input
+                                type="date"
+                                name="deadline"
+                                value="{{ old('deadline', $competition->deadline) }}"
+                                class="w-full bg-[#1b1b2d] border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
+
+                            @error('deadline')
+                                <p class="text-rose-400 text-sm mt-2">
+                                    {{ $message }}
+                                </p>
+                            @enderror
+                        </div>
                     </div>
 
-                    <div class="mb-4">
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Deadline</label>
-                        <input type="date" name="deadline" value="{{ old('deadline', $competition->deadline) }}"
-                            class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    </div>
+                    {{-- POSTER --}}
+                    <div>
+                        <label class="block text-sm font-bold text-white mb-3">
+                            Poster Kompetisi
+                        </label>
 
-                    <div class="mb-6">
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Poster (opsional)</label>
                         @if($competition->poster)
-                            <img src="{{ Storage::url($competition->poster) }}"
-                                class="w-full h-40 object-cover rounded-lg mb-2">
+                            <img
+                                src="{{ asset('storage/' . $competition->poster) }}"
+                                class="w-full h-64 object-cover rounded-2xl mb-5">
                         @endif
-                        <input type="file" name="poster" accept="image/*"
-                            class="w-full border border-gray-300 rounded-lg px-4 py-2">
+
+                        <input
+                            type="file"
+                            name="poster"
+                            class="w-full bg-[#1b1b2d] border border-white/10 rounded-2xl px-5 py-4 text-slate-300">
+
+                        @error('poster')
+                            <p class="text-rose-400 text-sm mt-2">
+                                {{ $message }}
+                            </p>
+                        @enderror
                     </div>
 
-                    <div class="flex gap-3">
-                        <button type="submit"
-                            class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg">
-                            Update Lomba
-                        </button>
-                        <a href="{{ route('competitions.index') }}"
-                            class="flex-1 text-center bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-2 px-4 rounded-lg">
+                    {{-- BUTTON --}}
+                    <div class="flex justify-end gap-4 pt-6">
+
+                        <a href="{{ route('competitions.show', $competition->id) }}"
+                            class="px-6 py-3 rounded-2xl bg-white/10 hover:bg-white/20 text-white font-bold transition">
                             Batal
                         </a>
+
+                        <button
+                            type="submit"
+                            class="px-8 py-3 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-black tracking-wide transition shadow-lg shadow-indigo-900/40">
+
+                            Simpan Perubahan
+                        </button>
                     </div>
                 </form>
-
             </div>
         </div>
     </div>
-</x-app-layout>
+@endsection

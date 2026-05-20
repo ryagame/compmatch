@@ -6,8 +6,14 @@ use Illuminate\Database\Eloquent\Model;
 
 class Competition extends Model
 {
+    protected $table = 'competitions';
     protected $fillable = [
-        'user_id', 'title', 'description', 'category', 'deadline', 'poster'
+        'title',
+        'description',
+        'category',
+        'deadline',
+        'poster',
+        'user_id',
     ];
 
     public function user()
